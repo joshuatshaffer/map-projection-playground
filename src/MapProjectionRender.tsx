@@ -5,7 +5,7 @@ import vertexShader from "./basic.vert?raw";
 import equirectangularFragmentShader from "./equirectangular.frag?raw";
 import { makeInputs } from "./inputs";
 import styles from "./MapProjectionRender.module.css";
-import { radToDeg } from "./utils";
+import { MapPlaygroundState, store } from "./store";
 
 export function MapProjectionRender() {
   return (
@@ -34,6 +34,15 @@ function mapProjectionRender(canvas: HTMLCanvasElement) {
     centerLon: { value: 0 },
     centerHeading: { value: 0 },
   };
+
+  const updateUniforms = (state: MapPlaygroundState) => {
+    uniforms.centerLat.value = state.mapCenter.lat;
+    uniforms.centerLon.value = state.mapCenter.lon;
+    uniforms.centerHeading.value = state.mapCenter.heading;
+  };
+
+  updateUniforms(store.getState());
+  const unsubscribeUpdateUniforms = store.subscribe(updateUniforms);
 
   const planeGeometry = new THREE.PlaneGeometry(1, 1);
 
@@ -67,6 +76,19 @@ function mapProjectionRender(canvas: HTMLCanvasElement) {
 
   const mapCenter = new THREE.Quaternion();
 
+  const updateMapCenter = (state: MapPlaygroundState) => {
+    mapCenter.setFromEuler(
+      new THREE.Euler(
+        state.mapCenter.lon,
+        state.mapCenter.lat,
+        -state.mapCenter.heading
+      )
+    );
+  };
+
+  updateMapCenter(store.getState());
+  const unsubscribeUpdateMapCenter = store.subscribe(updateMapCenter);
+
   const inputs = makeInputs(canvas, {
     onDrag: ({ from, to }) => {
       mapCenter.multiply(
@@ -80,16 +102,15 @@ function mapProjectionRender(canvas: HTMLCanvasElement) {
       );
 
       const mapCenterEuler = new THREE.Euler().setFromQuaternion(mapCenter);
-      uniforms.centerLat.value = mapCenterEuler.y;
-      uniforms.centerLon.value = mapCenterEuler.x;
-      uniforms.centerHeading.value = -mapCenterEuler.z;
 
-      console.log(
-        "Map center",
-        radToDeg(mapCenterEuler.y),
-        radToDeg(mapCenterEuler.x),
-        radToDeg(-mapCenterEuler.z)
-      );
+      store.setState((state) => ({
+        ...state,
+        mapCenter: {
+          lat: mapCenterEuler.y,
+          lon: mapCenterEuler.x,
+          heading: -mapCenterEuler.z,
+        },
+      }));
     },
   });
 
@@ -115,6 +136,9 @@ function mapProjectionRender(canvas: HTMLCanvasElement) {
     window.removeEventListener("resize", onWindowResize);
     renderer.setAnimationLoop(null);
     renderer.dispose();
+
+    unsubscribeUpdateUniforms();
+    unsubscribeUpdateMapCenter();
 
     equirectangularMesh.material.dispose();
     azimuthalEquidistantMesh.material.dispose();
