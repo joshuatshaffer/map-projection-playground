@@ -74,6 +74,7 @@ function mapProjectionRender(canvas: HTMLCanvasElement) {
       vertexShader,
       fragmentShader: azimuthalEquidistantFragmentShader,
       uniforms,
+      alphaToCoverage: true,
     })
   );
 
