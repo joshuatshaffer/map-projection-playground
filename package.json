@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "deploy": "/home/joshua/data-i/personal-projects/active/my-server/derployer/derployer.sh map-projection-playground ./dist",
     "lint": "eslint .",
     "preview": "vite preview"
   },
