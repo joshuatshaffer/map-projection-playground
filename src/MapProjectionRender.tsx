@@ -5,6 +5,7 @@ import vertexShader from "./basic.vert?raw";
 import equirectangularFragmentShader from "./equirectangular.frag?raw";
 import { makeInputs } from "./inputs";
 import styles from "./MapProjectionRender.module.css";
+import { radToDeg } from "./utils";
 
 export function MapProjectionRender() {
   return (
@@ -77,7 +78,14 @@ function mapProjectionRender(canvas: HTMLCanvasElement) {
       const mapCenterEuler = new THREE.Euler().setFromQuaternion(mapCenter);
       uniforms.centerLat.value = mapCenterEuler.y;
       uniforms.centerLon.value = mapCenterEuler.x;
-      uniforms.centerHeading.value = mapCenterEuler.z;
+      uniforms.centerHeading.value = -mapCenterEuler.z;
+
+      console.log(
+        "Map center",
+        radToDeg(mapCenterEuler.y),
+        radToDeg(mapCenterEuler.x),
+        radToDeg(-mapCenterEuler.z)
+      );
     },
   });
 

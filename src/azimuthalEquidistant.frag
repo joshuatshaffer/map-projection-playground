@@ -22,10 +22,10 @@ void main() {
   }
 
   xy = mat2(
-           cos(-centerHeading),
-           -sin(-centerHeading),
-           sin(-centerHeading),
-           cos(-centerHeading)
+           cos(centerHeading),
+           -sin(centerHeading),
+           sin(centerHeading),
+           cos(centerHeading)
        ) *
        xy;
 
