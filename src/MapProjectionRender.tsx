@@ -23,20 +23,25 @@ function mapProjectionRender(canvas: HTMLCanvasElement) {
   const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
   const scene = new THREE.Scene();
 
+  const uniforms = {
+    diffuse: { value: new THREE.TextureLoader().load(mapImageSrc) },
+    centerLon: { value: 0 },
+  };
+
   scene.add(
     new THREE.Mesh(
       new THREE.PlaneGeometry(2, 2),
       new THREE.RawShaderMaterial({
         vertexShader,
         fragmentShader,
-        uniforms: {
-          diffuse: { value: new THREE.TextureLoader().load(mapImageSrc) },
-        },
+        uniforms,
       })
     )
   );
 
   const animate = () => {
+    uniforms.centerLon.value = performance.now() * (360 / 30000);
+
     renderer.render(scene, camera);
   };
 
