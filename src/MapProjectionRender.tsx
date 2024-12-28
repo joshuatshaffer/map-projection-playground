@@ -1,8 +1,9 @@
 import * as THREE from "three";
 import mapImageSrc from "./assets/nasa-visible-earth-blue-marble-next-generation/july/world.topo.bathy.200407.3x5400x2700.jpg";
+import azimuthalEquidistantFragmentShader from "./azimuthalEquidistant.frag?raw";
+import vertexShader from "./basic.vert?raw";
+import equirectangularFragmentShader from "./equirectangular.frag?raw";
 import { makeInputs } from "./inputs";
-import fragmentShader from "./mapProjection.frag?raw";
-import vertexShader from "./mapProjection.vert?raw";
 import styles from "./MapProjectionRender.module.css";
 
 export function MapProjectionRender() {
@@ -31,16 +32,33 @@ function mapProjectionRender(canvas: HTMLCanvasElement) {
     centerHeading: { value: 0 },
   };
 
-  scene.add(
-    new THREE.Mesh(
-      new THREE.PlaneGeometry(2, 2),
-      new THREE.RawShaderMaterial({
-        vertexShader,
-        fragmentShader,
-        uniforms,
-      })
-    )
+  const equirectangularMesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(1, 1),
+    new THREE.RawShaderMaterial({
+      vertexShader,
+      fragmentShader: equirectangularFragmentShader,
+      uniforms,
+    })
   );
+
+  equirectangularMesh.position.x = -0.5;
+  equirectangularMesh.position.y = 0.5;
+
+  scene.add(equirectangularMesh);
+
+  const azimuthalEquidistantMesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(1, 1),
+    new THREE.RawShaderMaterial({
+      vertexShader,
+      fragmentShader: azimuthalEquidistantFragmentShader,
+      uniforms,
+    })
+  );
+
+  azimuthalEquidistantMesh.position.x = 0.5;
+  azimuthalEquidistantMesh.position.y = 0.5;
+
+  scene.add(azimuthalEquidistantMesh);
 
   const mapCenter = new THREE.Quaternion();
 

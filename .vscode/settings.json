@@ -12,5 +12,6 @@
       "rule": "*",
       "severity": "downgrade"
     }
-  ]
+  ],
+  "cSpell.words": ["equirectangular"]
 }
