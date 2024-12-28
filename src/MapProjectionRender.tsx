@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import mapImageSrc from "./assets/nasa-visible-earth-blue-marble-next-generation/july/world.topo.bathy.200407.3x5400x2700.jpg";
+import { makeInputs } from "./inputs";
 import fragmentShader from "./mapProjection.frag?raw";
 import vertexShader from "./mapProjection.vert?raw";
 import styles from "./MapProjectionRender.module.css";
@@ -39,9 +40,14 @@ function mapProjectionRender(canvas: HTMLCanvasElement) {
     )
   );
 
-  const animate = () => {
-    uniforms.centerLon.value = performance.now() * (360 / 30000);
+  const inputs = makeInputs(canvas, {
+    onDrag: ({ from, to }) => {
+      uniforms.centerLon.value +=
+        ((to.offsetX - from.offsetX) / window.innerWidth) * 360;
+    },
+  });
 
+  const animate = () => {
     renderer.render(scene, camera);
   };
 
@@ -59,6 +65,8 @@ function mapProjectionRender(canvas: HTMLCanvasElement) {
 
   return () => {
     console.log("Cleaning up AR overlay");
+
+    inputs.dispose();
 
     renderer.setAnimationLoop(null);
     renderer.dispose();
