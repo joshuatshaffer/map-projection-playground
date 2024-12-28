@@ -33,12 +33,20 @@ function mapProjectionRender(canvas: HTMLCanvasElement) {
     centerLat: { value: 0 },
     centerLon: { value: 0 },
     centerHeading: { value: 0 },
+    rotation: { value: new THREE.Matrix4() },
   };
 
   const updateUniforms = (state: MapPlaygroundState) => {
     uniforms.centerLat.value = state.mapCenter.lat;
     uniforms.centerLon.value = state.mapCenter.lon;
     uniforms.centerHeading.value = state.mapCenter.heading;
+    uniforms.rotation.value.makeRotationFromEuler(
+      new THREE.Euler(
+        state.mapCenter.heading,
+        state.mapCenter.lat,
+        -state.mapCenter.lon
+      )
+    );
   };
 
   updateUniforms(store.getState());
