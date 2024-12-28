@@ -26,6 +26,7 @@ function mapProjectionRender(canvas: HTMLCanvasElement) {
 
   const uniforms = {
     diffuse: { value: new THREE.TextureLoader().load(mapImageSrc) },
+    centerLat: { value: 0 },
     centerLon: { value: 0 },
   };
 
@@ -42,8 +43,11 @@ function mapProjectionRender(canvas: HTMLCanvasElement) {
 
   const inputs = makeInputs(canvas, {
     onDrag: ({ from, to }) => {
-      uniforms.centerLon.value +=
-        ((to.offsetX - from.offsetX) / window.innerWidth) * 360;
+      uniforms.centerLat.value +=
+        ((to.offsetY - from.offsetY) / window.innerHeight) * 10;
+
+      uniforms.centerLon.value -=
+        ((to.offsetX - from.offsetX) / window.innerWidth) * 10;
     },
   });
 
