@@ -28,6 +28,7 @@ function mapProjectionRender(canvas: HTMLCanvasElement) {
     diffuse: { value: new THREE.TextureLoader().load(mapImageSrc) },
     centerLat: { value: 0 },
     centerLon: { value: 0 },
+    centerHeading: { value: 0 },
   };
 
   scene.add(
@@ -41,13 +42,24 @@ function mapProjectionRender(canvas: HTMLCanvasElement) {
     )
   );
 
+  const mapCenter = new THREE.Quaternion();
+
   const inputs = makeInputs(canvas, {
     onDrag: ({ from, to }) => {
-      uniforms.centerLat.value +=
-        ((to.offsetY - from.offsetY) / window.innerHeight) * 10;
+      mapCenter.multiply(
+        new THREE.Quaternion().setFromEuler(
+          new THREE.Euler(
+            -((to.offsetX - from.offsetX) / window.innerWidth) * 10,
+            ((to.offsetY - from.offsetY) / window.innerHeight) * 10,
+            0
+          )
+        )
+      );
 
-      uniforms.centerLon.value -=
-        ((to.offsetX - from.offsetX) / window.innerWidth) * 10;
+      const mapCenterEuler = new THREE.Euler().setFromQuaternion(mapCenter);
+      uniforms.centerLat.value = mapCenterEuler.y;
+      uniforms.centerLon.value = mapCenterEuler.x;
+      uniforms.centerHeading.value = mapCenterEuler.z;
     },
   });
 
