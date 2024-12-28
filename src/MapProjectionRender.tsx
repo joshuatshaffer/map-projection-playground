@@ -26,15 +26,19 @@ function mapProjectionRender(canvas: HTMLCanvasElement) {
   const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
   const scene = new THREE.Scene();
 
+  const mapTexture = new THREE.TextureLoader().load(mapImageSrc);
+
   const uniforms = {
-    diffuse: { value: new THREE.TextureLoader().load(mapImageSrc) },
+    diffuse: { value: mapTexture },
     centerLat: { value: 0 },
     centerLon: { value: 0 },
     centerHeading: { value: 0 },
   };
 
+  const planeGeometry = new THREE.PlaneGeometry(1, 1);
+
   const equirectangularMesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(1, 1),
+    planeGeometry,
     new THREE.RawShaderMaterial({
       vertexShader,
       fragmentShader: equirectangularFragmentShader,
@@ -48,7 +52,7 @@ function mapProjectionRender(canvas: HTMLCanvasElement) {
   scene.add(equirectangularMesh);
 
   const azimuthalEquidistantMesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(1, 1),
+    planeGeometry,
     new THREE.RawShaderMaterial({
       vertexShader,
       fragmentShader: azimuthalEquidistantFragmentShader,
@@ -106,12 +110,15 @@ function mapProjectionRender(canvas: HTMLCanvasElement) {
   window.addEventListener("resize", onWindowResize);
 
   return () => {
-    console.log("Cleaning up AR overlay");
-
     inputs.dispose();
 
+    window.removeEventListener("resize", onWindowResize);
     renderer.setAnimationLoop(null);
     renderer.dispose();
-    window.removeEventListener("resize", onWindowResize);
+
+    equirectangularMesh.material.dispose();
+    azimuthalEquidistantMesh.material.dispose();
+    planeGeometry.dispose();
+    mapTexture.dispose();
   };
 }
