@@ -1,3 +1,5 @@
 AlignAfterOpenBracket: BlockIndent
 BinPackArguments: false
 BinPackParameters: false
+IndentWidth: 2
+ContinuationIndentWidth: 2

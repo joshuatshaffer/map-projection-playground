@@ -11,13 +11,13 @@ const float PI = 3.141592653589793;
 
 vec3 sphericalToCartesian(vec3 s) {
   return vec3(
-      cos(s.y) * cos(s.x) * s.z, cos(s.y) * sin(s.x) * s.z, sin(s.y) * s.z
+    cos(s.y) * cos(s.x) * s.z, cos(s.y) * sin(s.x) * s.z, sin(s.y) * s.z
   );
 }
 
 vec3 cartesianToSpherical(vec3 c) {
   return vec3(
-      atan(c.y, c.x), atan(c.z, sqrt(c.x * c.x + c.y * c.y)), length(c)
+    atan(c.y, c.x), atan(c.z, sqrt(c.x * c.x + c.y * c.y)), length(c)
   );
 }
 
