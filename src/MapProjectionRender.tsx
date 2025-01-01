@@ -135,8 +135,23 @@ function mapProjectionRender(canvas: HTMLCanvasElement) {
 
   const onWindowResize = () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
+
+    // Fill the screen without distorting the aspect ratio.
+    if (window.innerHeight > window.innerWidth) {
+      camera.left = -1;
+      camera.right = 1;
+      camera.top = window.innerHeight / window.innerWidth;
+      camera.bottom = -window.innerHeight / window.innerWidth;
+    } else {
+      camera.left = -window.innerWidth / window.innerHeight;
+      camera.right = window.innerWidth / window.innerHeight;
+      camera.top = 1;
+      camera.bottom = -1;
+    }
+    camera.updateProjectionMatrix();
   };
 
+  onWindowResize();
   window.addEventListener("resize", onWindowResize);
 
   return () => {
