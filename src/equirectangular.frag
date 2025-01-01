@@ -10,15 +10,13 @@ uniform mat4 rotation;
 const float PI = 3.141592653589793;
 
 vec3 sphericalToCartesian(vec3 s) {
-  return vec3(
-    cos(s.y) * cos(s.x) * s.z, cos(s.y) * sin(s.x) * s.z, sin(s.y) * s.z
-  );
+  vec2 h = vec2(cos(s.x), sin(s.x));
+  vec2 v = vec2(cos(s.y), sin(s.y));
+  return vec3(h * v.x, v.y) * s.z;
 }
 
 vec3 cartesianToSpherical(vec3 c) {
-  return vec3(
-    atan(c.y, c.x), atan(c.z, sqrt(c.x * c.x + c.y * c.y)), length(c)
-  );
+  return vec3(atan(c.y, c.x), atan(c.z, length(c.xy)), length(c));
 }
 
 void main() {

@@ -10,9 +10,7 @@ uniform mat4 rotation;
 const float PI = 3.141592653589793;
 
 vec3 cartesianToSpherical(vec3 c) {
-  return vec3(
-    atan(c.y, c.x), atan(c.z, sqrt(c.x * c.x + c.y * c.y)), length(c)
-  );
+  return vec3(atan(c.y, c.x), atan(c.z, length(c.xy)), length(c));
 }
 
 void main() {
