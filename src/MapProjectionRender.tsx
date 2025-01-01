@@ -4,6 +4,7 @@ import azimuthalEquidistantFragmentShader from "./azimuthalEquidistant.frag?raw"
 import vertexShader from "./basic.vert?raw";
 import equirectangularFragmentShader from "./equirectangular.frag?raw";
 import { makeInputs } from "./inputs";
+import lambertAzimuthalEqualAreaFragmentShader from "./lambertAzimuthalEqualArea.frag?raw";
 import styles from "./MapProjectionRender.module.css";
 import { MapPlaygroundState, store } from "./store";
 
@@ -82,6 +83,21 @@ function mapProjectionRender(canvas: HTMLCanvasElement) {
   azimuthalEquidistantMesh.position.y = 0.5;
 
   scene.add(azimuthalEquidistantMesh);
+
+  const lambertAzimuthalEqualAreaMesh = new THREE.Mesh(
+    planeGeometry,
+    new THREE.RawShaderMaterial({
+      vertexShader,
+      fragmentShader: lambertAzimuthalEqualAreaFragmentShader,
+      uniforms,
+      alphaToCoverage: true,
+    })
+  );
+
+  lambertAzimuthalEqualAreaMesh.position.x = 0.5;
+  lambertAzimuthalEqualAreaMesh.position.y = -0.5;
+
+  scene.add(lambertAzimuthalEqualAreaMesh);
 
   const mapCenter = new THREE.Quaternion();
 
@@ -166,6 +182,7 @@ function mapProjectionRender(canvas: HTMLCanvasElement) {
 
     equirectangularMesh.material.dispose();
     azimuthalEquidistantMesh.material.dispose();
+    lambertAzimuthalEqualAreaMesh.material.dispose();
     planeGeometry.dispose();
     mapTexture.dispose();
   };
